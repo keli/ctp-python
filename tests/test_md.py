@@ -9,7 +9,7 @@ import os, os.path
 import threading
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def spi(front, broker, user, password):
     assert front and broker and user and password, "missing arguments"
     _spi = MdSpi(front, broker, user, password)

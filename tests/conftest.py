@@ -26,34 +26,34 @@ def pytest_addoption(parser):
         "--exchange", action="store", default="CFE", help="exchange ID"
     )
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def front(request):
     return request.config.getoption("--front")
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def broker(request):
     return request.config.getoption("--broker")
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def user(request):
     return request.config.getoption("--user")
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def password(request):
     return request.config.getoption("--password")
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def app(request):
     return request.config.getoption("--app")
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def auth(request):
     return request.config.getoption("--auth")
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def instrument(request):
     return request.config.getoption("--instrument")
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def exchange(request):
     return request.config.getoption("--exchange")
