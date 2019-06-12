@@ -8,6 +8,7 @@ import os, glob, shutil
 API_VER='6.3.13'
 API_DIR='api/' + API_VER
 API_LIBS=glob.glob(API_DIR + '/*.so')
+API_NAMES=[os.path.basename(path)[3:-3] for path in API_LIBS]
 
 def get_install_data_dir():
     d = dist.Distribution()
@@ -28,7 +29,7 @@ CTP_EXT = Extension(
     library_dirs=[API_DIR],
     extra_link_args=['-Wl,-rpath,$ORIGIN'],
     #libraries=['thostmduserapi', 'thosttraderapi'],
-    libraries=['thostmduserapi_se', 'thosttraderapi_se'],
+    libraries=API_NAMES,
     language='c++',
     #swig_opts=['-py3', '-c++', '-threads', '-I./' + API_DIR],
 )

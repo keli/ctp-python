@@ -5,6 +5,9 @@
 # the SWIG interface file instead.
 
 
+from sys import float_info
+
+
 
 
 
@@ -104,6 +107,24 @@ try:
 except __builtin__.Exception:
     weakref_proxy = lambda x: x
 
+
+
+def _swig_repr(self):
+    values = []
+    for k in vars(self.__class__):
+        if not k.startswith('_'):
+            v = getattr(self, k)
+            if isinstance(v, float):
+                if v == float_info.max:
+                    values.append("%s: None" % k)
+                else:
+                    values.append("%s: %.2f" % (k, v))
+            elif isinstance(v, int):
+                values.append("%s: %i" % (k, v))
+            else:
+                values.append('%s: "%s"' % (k, v))
+
+    return "<%s.%s; %s>" % (self.__class__.__module__, self.__class__.__name__, ', '.join(values))
 
 THOST_TERT_RESTART = _ctp.THOST_TERT_RESTART
 THOST_TERT_RESUME = _ctp.THOST_TERT_RESUME

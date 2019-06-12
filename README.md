@@ -9,6 +9,7 @@ git@github.com:keli/ctp-python.git
 cd ctp-python
 ```
 
+安装
 ```
 python setup.py install
 ```
@@ -17,7 +18,7 @@ python setup.py install
 
 1. 修改setup.py中的API_VER的值为'6.3.15'
 
-2. 最好swig重新生成一下源码
+2. 用swig重新生成一下源码
 
 ```
 cd ctp-python
@@ -34,6 +35,7 @@ pytest -s tests/test_trader.py --front=tcp://180.168.146.187:13030 --broker=<bro
 ## 其他事项
 
 - 本项目中CTP返回的GBK编码字符串已经全部自动转换为UTF-8
+- 市场数据中的极大值代表无数据，为可读性起见打印整个结构体时会显示为None
 - 目前只支持了Python 3，测试环境Linux
 - 目前只在simnow上的终端厂商测试环境测通了trader。
 - simnow以及大部分券商的测试环境是用的6.3.13版本，版本不同将无法调用OnFrontConnected。
