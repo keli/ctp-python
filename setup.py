@@ -5,7 +5,7 @@ from distutils import dist
 import distutils.command.install as dist_install
 import os, glob, shutil
 
-API_VER='6.3.13'
+API_VER='6.3.15'
 API_DIR='api/' + API_VER
 API_LIBS=glob.glob(API_DIR + '/*.so')
 API_NAMES=[os.path.basename(path)[3:-3] for path in API_LIBS]

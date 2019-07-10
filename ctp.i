@@ -6,8 +6,18 @@
 //#define SWIG_PYTHON_STRICT_BYTE_CHAR
 //%}
 
+// #define %ctp_new_instance(TYPE...) %reinterpret_cast(calloc(1, sizeof(TYPE)), TYPE*)
+// #define %ctp_new_copy(VAL, TYPE...) %reinterpret_cast(memcpy(%ctp_new_instance(TYPE), &(VAL), sizeof(TYPE)), TYPE*)
+
+// %extend TAGNAME {
+//   struct TAGNAME *__copy__() {
+//     return %ctp_new_copy(*$self, struct TAGNAME);
+//   }
+// }
+
 %pythonbegin %{
-from sys import float_info
+from sys import stderr, float_info
+from traceback import print_exc, print_exception
 %}
 
 %pythoncode %{
@@ -40,28 +50,89 @@ def _swig_repr(self):
 
 %feature("director:except") {
     if ($error != NULL) {
-        PyObject *exc, *val, *tb;
-        PyErr_Fetch(&exc, &val, &tb);
-        PyErr_NormalizeException(&exc, &val, &tb);
-        std::string err_msg("In method '$symname': ");
 
-        PyObject* exc_str = PyObject_GetAttrString(exc, "__name__");
-        err_msg += PyUnicode_AsUTF8(exc_str);
-        Py_XDECREF(exc_str);
-
-        if (val != NULL)
+        if ( !( PyErr_ExceptionMatches(PyExc_SystemExit) ||
+                PyErr_ExceptionMatches(PyExc_SystemError) ||
+                PyErr_ExceptionMatches(PyExc_KeyboardInterrupt) ) )
         {
-            PyObject* val_str = PyObject_Str(val);
-            err_msg += ": ";
-            err_msg += PyUnicode_AsUTF8(val_str);
-            Py_XDECREF(val_str);
+            PyObject *value = 0;
+            PyObject *traceback = 0;
+
+            PyErr_Fetch(&$error, &value, &traceback);
+            PyErr_NormalizeException(&$error, &value, &traceback);
+
+            {
+                if (value == NULL) {
+                    value = Py_None;
+                }
+                if (traceback == NULL) {
+                    traceback = Py_None;
+                }
+                swig::SwigVar_PyObject swig_method_name = SWIG_Python_str_FromChar((char *) "pyError");
+                swig::SwigVar_PyObject result = PyObject_CallMethodObjArgs(swig_get_self(), (PyObject *) swig_method_name, $error, value, traceback, NULL);
+            }
+
+            Py_XDECREF($error);
+            Py_XDECREF(value);
+            Py_XDECREF(traceback);
+
+            $error = PyErr_Occurred();
+            if ($error != NULL) {
+                PyErr_Print();
+                throw Swig::DirectorMethodException();
+            }
         }
+        else
+        {
+            throw Swig::DirectorMethodException();
+        }
+    }
+}
 
-        Py_XDECREF(exc);
-        Py_XDECREF(val);
-        Py_XDECREF(tb);
+%extend CThostFtdcMdSpi {
+%pythoncode {
+    def pyError(self, type, value, traceback):
+        '''Handles an error thrown during invocation of an method.
 
-        Swig::DirectorMethodException::raise(err_msg.c_str());
+        Arguments are those provided by sys.exc_info()
+        '''
+        stderr.write("Exception thrown during method dispatch:\n")
+        print_exception(type, value, traceback)
+}
+}
+
+%extend CThostFtdcTraderSpi {
+%pythoncode {
+    def pyError(self, type, value, traceback):
+        '''Handles an error thrown during invocation of an method.
+
+        Arguments are those provided by sys.exc_info()
+        '''
+        stderr.write("Exception thrown during method dispatch:\n")
+        print_exception(type, value, traceback)
+}
+}
+
+/* Exception handling */
+%include exception.i
+%exception {
+    try {
+        $action
+    } catch(Swig::DirectorPureVirtualException &e) {
+        /* Call to pure virtual method, raise not implemented error */
+        PyErr_SetString(PyExc_NotImplementedError, "$decl not implemented");
+        SWIG_fail;
+    } catch(Swig::DirectorException &e) {
+        /* Fail if there is a problem in the director proxy transport */
+        SWIG_fail;
+    } catch(std::exception& e) {
+        /* Convert standard error to Exception */
+        PyErr_SetString(PyExc_Exception, const_cast<char*>(e.what()));
+        SWIG_fail;
+    } catch(...) {
+        /* Final catch all, results in runtime error */
+        PyErr_SetString(PyExc_RuntimeError, "Unknown error caught in CTP SWIG wrapper...");
+        SWIG_fail;
     }
 }
 
@@ -69,7 +140,7 @@ def _swig_repr(self):
     if ($1) {
         iconv_t conv = iconv_open("UTF-8", "GBK");
         if (conv == (iconv_t)-1) {
-            PyErr_SetString(PyExc_RuntimeError, "Failed to initialize iconv.");
+            PyErr_SetString(PyExc_RuntimeError, "failed to initialize iconv.");
             SWIG_fail;
         } else {
             size_t inlen = strlen($1);
@@ -83,7 +154,7 @@ def _swig_repr(self):
                 $result = SWIG_FromCharPtrAndSize(buf, sizeof buf - outlen);
             } else {
                 iconv_close(conv);
-                PyErr_SetString(PyExc_UnicodeError, "Error converting from GBK to UTF-8.");
+                PyErr_SetString(PyExc_UnicodeError, "failed to convert '$1_name' from GBK to UTF-8.");
                 SWIG_fail;
             }
         }
