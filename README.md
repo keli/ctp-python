@@ -39,6 +39,12 @@ pytest -s tests/test_trader.py --front=tcp://180.168.146.187:13030 --broker=<bro
 - 目前只支持了Python 3，测试环境Linux
 - simnow已经启用6.3.15版本
 
+## 常见问题
+
+- 为什么报UTF-8和GBK的转码错误？
+
+这个是内存管理的问题而不是转码的问题，ctp库会释放掉它传给你的回调函数的内容，当你打印的时候这块内存已经free掉了，所以就报转码失败了。这个最理想的处理是改swig定义来自动把相应的结构体内容拷到python，但是我还没太搞清楚怎么在swig中做这件事。我自己的代码里面需要缓存起来的ctp结构只有很少的几处，所以直接在用户代码中手动转成自己定义的python数据类型了。
+
 ## 有用的参考链接
 - [公告：SIMNOW对外前置网络调整](http://www.simnow.com.cn/notification/id/61.action)
 - [什么是穿透式监管，需要投资者做什么](http://www.360doc.com/content/19/0514/11/8392_835597706.shtml) 
