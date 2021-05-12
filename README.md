@@ -43,12 +43,44 @@ pytest -s tests/test_trader.py --front=tcp://180.168.146.187:13030 --broker=<bro
 - 目前只支持了Python 3，测试环境Linux
 - simnow已经启用6.3.15版本
 
-## 常见问题
+## Linux下穿透式监管信息采集常见问题
+
+- 到底需要不需要LinuxDataCollect.so?
+
+  自写CTP程序直连是不需要的，如果你不确定，那就是不需要
+
+- 报错Decrypt handshake data failed
+
+  CTP版本与服务器端不一致，首次跟期货公司采集的时候请用“评测版本”如6.3.13，后续生产环境请用“生产版本”如6.3.15
+
+- 报错 dmidecode not found
+
+  通常默认都有装，加一下dmidecode命令的相关路径到PATH，一般是/usr/sbin
+
+- 报一堆 permission denied
+
+  给dmidecode加下权限`sudo chmod a+s /usr/sbin/dmidecode`
+
+- 拿不到硬盘序列号
+
+  Debian系可以`sudo adduser username disk`把自己加到disk组（加完需要重新登录，输入`groups`确认自己已经在disk组里），或者直接给磁盘设备文件加读权限`sudo chmod a+r /dev/sda`
+
+- 不知道什么情况，xx数据拿不到
+
+  用以下python脚本自己慢慢试吧，当打印出来是第一行结果是0则成功了，否则是-1。第二行是取到的信息，格式为```(操作系统类型)@(信息采集时间)@(内网IP1)@(内网IP2)@(网卡MAC1)@(网卡MAC2)@(设备名)@(操作系统版本)@(Disk_ID)@(CPU_ID)@(BIOS_ID)```
+  
+  ```python
+  import ctypes
+  dll = ctypes.cdll.LoadLibrary('./thosttraderapi_se.so')
+  info = (ctypes.c_char * 344)()
+  length = ctypes.c_int()
+  print(dll._Z21CTP_GetRealSystemInfoPcRi(info, ctypes.byref(length)))
+  print(info.value)
+  ```
+
+## 其他常见问题
 
 - 为什么报UTF-8和GBK的转码错误？
 
-这个是内存管理的问题而不是转码的问题，ctp库会释放掉它传给你的回调函数的内容，当你打印的时候这块内存已经free掉了，所以就报转码失败了。这个最理想的处理是改swig定义来自动把相应的结构体内容拷到python，但是我还没太搞清楚怎么在swig中做这件事。我自己的代码里面需要缓存起来的ctp结构只有很少的几处，所以直接在用户代码中手动转成自己定义的python数据类型了。
+  这个是内存管理的问题而不是转码的问题，ctp库会释放掉它传给你的回调函数的内容，当你打印的时候这块内存已经free掉了，所以就报转码失败了。这个最理想的处理是改swig定义来自动把相应的结构体内容拷到python，但是我还没太搞清楚怎么在swig中做这件事。我自己的代码里面需要缓存起来的ctp结构只有很少的几处，所以直接在用户代码中手动转成自己定义的python数据类型了。
 
-## 有用的参考链接
-- [什么是穿透式监管，需要投资者做什么](http://www.360doc.com/content/19/0514/11/8392_835597706.shtml) 
-- [看完这篇，彻底搞定期货穿透式CTP API接入](https://www.vnpy.com/forum/topic/603-kan-wan-zhe-pian-che-di-gao-ding-qi-huo-chuan-tou-shi-ctp-apijie-ru)
