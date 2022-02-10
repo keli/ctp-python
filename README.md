@@ -9,7 +9,7 @@
 
 克隆代码到本地
 ```
-git@github.com:keli/ctp-python.git
+git clone git@github.com:keli/ctp-python.git
 cd ctp-python
 ```
 
