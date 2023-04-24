@@ -26,7 +26,7 @@ python setup.py install
 
 ```
 cd ctp-python
-swig -python -py3 -c++ -threads -I./api/6.3.13 -o ctp_wrap.cpp ctp.i
+swig -python -py3 -c++ -threads -I./api/6.3.13/linux -o ctp_wrap.cpp ctp.i
 python setup.py install
 ```
 
