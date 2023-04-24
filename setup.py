@@ -5,14 +5,17 @@ from distutils import dist
 import distutils.command.install as dist_install
 import os, sys, glob, shutil, pathlib
 
-API_VER='6.6.1'
+API_VER = os.environ.get('API_VER', '6.6.1')
 
 if sys.platform.startswith('darwin'):
+    if API_VER < '6.6.9':
+        print('Error: Platform', sys.platform, 'API Version <', API_VER, 'not supported')
+        sys.exit(-1)
     API_DIR='api/' + API_VER + '/darwin'
 elif sys.platform.startswith('linux'):
     API_DIR='api/' + API_VER + '/linux'
 else:
-    print('Platform', sys.platform, 'not supported')
+    print('Error: Platform', sys.platform, 'not supported')
     sys.exit(-1)
 
 API_LIBS=glob.glob(API_DIR + '/*.so') + glob.glob(API_DIR + '/*.a')
@@ -31,8 +34,8 @@ class BuildPy(build_py):
 
 CTP_EXT = Extension(
     '_ctp',
-    #['ctp.i'],
-    ['ctp_wrap.cpp'],
+    ['ctp.i'],
+    # ['ctp_wrap.cpp'],
     include_dirs=[API_DIR],
     library_dirs=[API_DIR],
     extra_link_args=['-Wl,-rpath,$ORIGIN'],
@@ -40,7 +43,7 @@ CTP_EXT = Extension(
     #libraries=['thostmduserapi', 'thosttraderapi'],
     libraries=API_NAMES,
     language='c++',
-    #swig_opts=['-py3', '-c++', '-threads', '-I./' + API_DIR],
+    swig_opts=['-py3', '-c++', '-threads', '-I./' + API_DIR],
 )
 
 try:

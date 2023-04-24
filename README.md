@@ -18,16 +18,10 @@ cd ctp-python
 python setup.py install
 ```
 
-目前默认使用的是6.6.1 Linux版本。如果需要链接和使用其他版本，只需要以下两步，以6.3.13版为例:
-
-1. 修改setup.py中的API_VER的值为'6.3.13'
-
-2. 用swig重新生成一下源码，注意指向api目录中的相应版本目录
+目前默认使用的是6.6.1 Linux版本。如果需要链接和使用其他版本，只需要设置API_VER环境变量到相应版本即可，以6.6.9版为例:
 
 ```
-cd ctp-python
-swig -python -py3 -c++ -threads -I./api/6.3.13/linux -o ctp_wrap.cpp ctp.i
-python setup.py install
+API_VER=6.6.9 python setup.py install
 ```
 
 跑一下测试
