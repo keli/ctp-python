@@ -27,7 +27,7 @@ API_VER=6.6.9 python setup.py install
 跑一下测试
 
 ```
-pytest -s tests/test_trader.py --front=tcp://180.168.146.187:13030 --broker=<broker_id> --user=<investor_id> --password=<password> --app=<app_id> --auth=<auth_code>
+pytest -s tests/test_trader.py --front=tcp://218.202.237.33:10203 --broker=9999 --user=<investor_id> --password=<password> --app=simnow_client_test --auth=0000000000000000
 ```
 
 ## 其他事项
