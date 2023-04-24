@@ -3,12 +3,20 @@ from setuptools.command.build_py import build_py
 
 from distutils import dist
 import distutils.command.install as dist_install
-import os, glob, shutil
+import os, sys, glob, shutil, pathlib
 
-API_VER='6.3.15'
-API_DIR='api/' + API_VER
-API_LIBS=glob.glob(API_DIR + '/*.so')
-API_NAMES=[os.path.basename(path)[3:-3] for path in API_LIBS]
+API_VER='6.6.9'
+
+if sys.platform.startswith('darwin'):
+    API_DIR='api/' + API_VER + '/darwin'
+elif sys.platform.startswith('linux'):
+    API_DIR='api/' + API_VER + '/linux'
+else:
+    print('Platform', sys.platform, 'not supported')
+    sys.exit(-1)
+
+API_LIBS=glob.glob(API_DIR + '/*.so') + glob.glob(API_DIR + '/*.a')
+API_NAMES=[pathlib.Path(path).stem[3:] for path in API_LIBS]
 
 def get_install_data_dir():
     d = dist.Distribution()
@@ -28,6 +36,7 @@ CTP_EXT = Extension(
     include_dirs=[API_DIR],
     library_dirs=[API_DIR],
     extra_link_args=['-Wl,-rpath,$ORIGIN'],
+    #extra_compile_args=['-mmacosx-version-min=11.3'],
     #libraries=['thostmduserapi', 'thosttraderapi'],
     libraries=API_NAMES,
     language='c++',
@@ -35,7 +44,7 @@ CTP_EXT = Extension(
 )
 
 try:
-    for path in API_LIBS:
+    for path in glob.glob(API_DIR + '/*.so'):
         shutil.copy(path, './')
     setup(
         name='ctp',
@@ -52,8 +61,11 @@ try:
             'License :: OSI Approved :: BSD License',
             'Programming Language :: Python',
             'Programming Language :: Python :: 3',
-            'Programming Language :: Python :: 3.6',
             'Programming Language :: Python :: 3.7',
+            'Programming Language :: Python :: 3.8',
+            'Programming Language :: Python :: 3.9',
+            'Programming Language :: Python :: 3.10',
+            'Programming Language :: Python :: 3.11',
             'Programming Language :: Python :: Implementation :: CPython',
         ],
         cmdclass={

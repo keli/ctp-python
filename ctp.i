@@ -145,7 +145,7 @@ def _swig_repr(self):
         } else {
             size_t inlen = strlen($1);
             size_t outlen = inlen * 2;
-            char buf[outlen] = {};
+            char buf[outlen];
             char **in = &$1;
             char *out = buf;
 
