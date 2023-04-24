@@ -5,7 +5,7 @@ from distutils import dist
 import distutils.command.install as dist_install
 import os, sys, glob, shutil, pathlib
 
-API_VER='6.6.9'
+API_VER='6.6.1'
 
 if sys.platform.startswith('darwin'):
     API_DIR='api/' + API_VER + '/darwin'
