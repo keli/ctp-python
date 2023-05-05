@@ -11,9 +11,9 @@ if sys.platform.startswith('darwin'):
     if API_VER < '6.6.9':
         print('Error: Platform', sys.platform, 'API Version <', API_VER, 'not supported')
         sys.exit(-1)
-    API_DIR='api/' + API_VER + '/darwin'
+    API_DIR=os.path.join('api', API_VER, 'darwin')
 elif sys.platform.startswith('linux'):
-    API_DIR='api/' + API_VER + '/linux'
+    API_DIR=os.path.join('api', API_VER, 'linux')
 else:
     print('Error: Platform', sys.platform, 'not supported')
     sys.exit(-1)
@@ -43,7 +43,7 @@ CTP_EXT = Extension(
     #libraries=['thostmduserapi', 'thosttraderapi'],
     libraries=API_NAMES,
     language='c++',
-    swig_opts=['-py3', '-c++', '-threads', '-I./' + API_DIR],
+    swig_opts=['-py3', '-c++', '-threads', '-I' + API_DIR],
 )
 
 try:
