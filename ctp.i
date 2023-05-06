@@ -144,8 +144,8 @@ def _swig_repr(self):
             SWIG_fail;
         } else {
             size_t inlen = strlen($1);
-            size_t outlen = inlen * 2;
-            char buf[outlen];
+            size_t outlen = 4096;
+            char buf[4096];
             char **in = &$1;
             char *out = buf;
 
@@ -161,7 +161,7 @@ def _swig_repr(self):
     }
 }
 
-%typemap(in) (char **ARRAY, int SIZE) {
+%typemap(in) (char **ARRAY, Py_ssize_t SIZE) {
     /* Check if is a list */
     if (PyList_Check($input)) {
         int size = PyList_Size($input);
