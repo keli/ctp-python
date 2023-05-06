@@ -1,45 +1,113 @@
-# CTP接口的Python封装
+# Python版CTP期货接口
 
-这套封装是本人在生产环境使用的，支持穿透式监管。自己封装的主要原因是其他作者经常弃坑，动不动就不更新了。
-考虑到一般在ctp之上还会有应用层的封装，也没必要做得太讲究，尽可能跟C++版保持一致，容易跟上新版本就好。
-这套封装本人2020年初正式实盘使用至今，稳定性还是有一定保证的。
+这套接口使用swig为官方C++版CTP接口提供Python版API，同时支持Linux/Mac/Windows。
 
 ## 注意事项
 
-- 使用前请仔细阅读文档。
-- 目前只支持Linux和Mac OS（API版本6.6.9及以上，Intel Mac未测试），尚不支持Windows系统。
-- 本人不对使用这套库的任何后果负责。
+- **本人不对使用这套库的任何后果负责**
+- 本人生产环境使用Linux，其他平台仅编译测试通过
+- Linux已测试环境：Debian stable amd64
+- Mac已测试环境：Mac OS Ventura（M1 Mac Mini，API版本6.6.9以上，Intel Mac未测试）
+- Windows已测试环境：Windows 11 64位（API版本6.6.9以上）
+- api目录中结尾带`.c`的版本号为测评版
+- CTP返回的GBK编码字符串已经全部自动转换为UTF-8
+- 市场数据中的极大值代表无数据，为可读性起见打印整个结构体时会显示为None
+
+## 编译环境准备
+
+#### Windows 11
+
+1. 安装编译环境
+```
+winget install Microsoft.VisualStudio.2022.BuildTools
+```
+> 然后菜单栏搜索并打开Visual Studio Installer，修改Build Tools的配置，将使用C++的桌面开发勾选上并安装
+
+2. 安装Python（以miniconda为例）
+```
+winget install miniconda3
+conda init
+```
+
+3. 安装swig命令，以及iconv库
+```
+conda install -c conda-forge swig libiconv
+```
+>可能需要关闭并重新打开命令行
+
+#### Mac OS
+
+1. 先在App Store中找到并安装Xcode，然后再安装Xcode命令行工具
+```
+xcode-select --install
+```
+> 在弹出的窗口确认
+
+2. 安装Python（推荐使用pyenv）
+> 略
+
+3. 安装swig命令（以homebrew为例）
+```
+brew install swig
+```
+
+#### Linux
+
+> 使用系统自带包管理器安装swig和gcc/g++编译器即可
+
+> 推荐使用pyenv安装管理python版本
+
 
 ## 安装说明
 
-克隆代码到本地
+1. 克隆代码到本地
 ```
 git clone git@github.com:keli/ctp-python.git
 cd ctp-python
 ```
 
-安装
+2. 编译安装
 ```
 python setup.py install
 ```
-
-目前默认使用的是6.6.1 Linux版本。如果需要链接和使用其他版本，只需要设置API_VER环境变量到相应版本即可，以6.6.9版为例:
-
+> 或
 ```
-API_VER=6.6.9 python setup.py install
+pip install .
 ```
 
-跑一下测试
+3. 版本选择（可选）
 
+目前默认使用的是6.6.9 版本。如果需要链接和使用其他版本，只需要在编译安装前，设置API_VER环境变量为相应版本即可。
+
+以6.6.9.c版为例:
+
+> Linux/Mac(bash/zsh)：
+```
+export API_VER=6.6.9.c
+```
+
+> Windows：
+```
+set API_VER=6.6.9.c
+```
+
+## 测试
+
+> 打开python shell，检查是否能正常import ctp
+
+```
+$ python
+Python 3.11.3
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import ctp
+>>>
+```
+
+> 跑一下测试（以simnow服务器为例，需要在simnow网站注册用户）
 ```
 pytest -s tests/test_trader.py --front=tcp://218.202.237.33:10203 --broker=9999 --user=<investor_id> --password=<password> --app=simnow_client_test --auth=0000000000000000
 ```
 
-## 其他事项
-
-- 本项目中CTP返回的GBK编码字符串已经全部自动转换为UTF-8
-- 市场数据中的极大值代表无数据，为可读性起见打印整个结构体时会显示为None
-- 目前只支持了Python 3，测试环境Linux和M1 Mac
 
 ## Linux下穿透式监管信息采集常见问题
 
@@ -81,4 +149,5 @@ pytest -s tests/test_trader.py --front=tcp://218.202.237.33:10203 --broker=9999 
 - 为什么报UTF-8和GBK的转码错误？
 
   这个是内存管理的问题而不是转码的问题，ctp库会释放掉它传给你的回调函数的内容，当你打印的时候这块内存已经free掉了，所以就报转码失败了。这个最理想的处理是改swig定义来自动把相应的结构体内容拷到python，但是我还没太搞清楚怎么在swig中做这件事。我自己的代码里面需要缓存起来的ctp结构只有很少的几处，直接在用户代码中手动拷贝到自己定义的python数据类型就可以了。
+
 
