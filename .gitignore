@@ -1,3 +1,6 @@
+ctp.py
+ctp_wrap.cpp
+ctp_wrap.h
 build/
 dist/
 *.egg-info/
