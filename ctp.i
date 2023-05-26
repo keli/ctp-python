@@ -161,7 +161,7 @@ def _swig_repr(self):
     }
 }
 
-%typemap(in) (char **ARRAY, Py_ssize_t SIZE) {
+%typemap(in) (char **ARRAY, int SIZE) {
     /* Check if is a list */
     if (PyList_Check($input)) {
         int size = PyList_Size($input);
