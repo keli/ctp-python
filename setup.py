@@ -7,6 +7,10 @@ import os, sys, glob, shutil, pathlib, sysconfig
 
 API_VER = os.environ.get('API_VER', '6.6.9')
 
+# Get the long description from relevant files
+with open('README.md', encoding='utf-8') as f:
+    readme = f.read()
+
 if sys.platform.startswith('darwin'):
     if API_VER < '6.6.9':
         print('Error: Platform', sys.platform, 'API Version <', API_VER,
@@ -89,6 +93,8 @@ try:
         author='Keli Hu',
         author_email='dev@keli.hu',
         description="""CTP for python""",
+        long_description=readme,
+        url='https://github.com/keli/ctp-python',
         ext_modules=[CTP_EXT],
         py_modules=['ctp'],
         packages=[''],
