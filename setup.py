@@ -88,8 +88,9 @@ try:
     for path in glob.glob(API_DIR + '/*.dll'):
         shutil.copy(path, './')
     setup(
-        name='ctp',
+        name='ctp-python',
         version=API_VER,
+        #version=API_VER+'-1',
         author='Keli Hu',
         author_email='dev@keli.hu',
         description="""CTP for python""",

@@ -4,14 +4,26 @@
 
 ## 注意事项
 
-- **本人不对使用这套库的任何后果负责**
+- **本项目出于个人兴趣及分享目的，与上期所CTP官方无任何关系。本人不对使用这套库的任何后果负责。**
 - 本人生产环境使用Linux，其他平台仅编译测试通过
+- 已通过github workflow编译好发布至pypi
 - Linux已测试环境：Debian stable amd64
 - Mac已测试环境：Mac OS Ventura（M1 Mac Mini，API版本6.6.9以上，Intel Mac未测试）
 - Windows已测试环境：Windows 11 64位（API版本6.6.9以上）
 - api目录中结尾带`.c`的版本号为测评版
 - CTP返回的GBK编码字符串已经全部自动转换为UTF-8
 - 市场数据中的极大值代表无数据，为可读性起见打印整个结构体时会显示为None
+
+## 安装方法
+
+```
+pip install ctp-python==6.6.9
+```
+
+- 只支持6.6.9及更新的CTP版本
+- 已编译的二进制版本支持Python3.7 - 3.11
+- 已编译的二进制版本支持平台：Windows amd64，Linux amd64，MacOS arm64 和 amd64
+- 其他版本请自行尝试编译（前提是有对应的CTP C++链接库），具体方法见下
 
 ## 编译环境准备
 
