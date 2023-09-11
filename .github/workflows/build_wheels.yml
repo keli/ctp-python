@@ -52,10 +52,10 @@ jobs:
           
       - name: Setup pip for Windows
         run: |
-          python -m pip install --upgrade pip wheel
+          python -m pip install --upgrade pip wheel build
           
       - name: Build wheel for Windows
-        run: python setup.py bdist_wheel
+        run: python -m build -w -n
         
       - uses: actions/upload-artifact@v2
         with:
