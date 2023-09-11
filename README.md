@@ -20,6 +20,11 @@
 pip install ctp-python==6.6.9
 ```
 
+如果在Windows下使用conda环境，那么使用前还需要安装libiconv
+```
+conda install -c conda-forge libiconv
+```
+
 - 只支持6.6.9及更新的CTP版本
 - 已编译的二进制版本支持Python3.7 - 3.11
 - 已编译的二进制版本支持平台：Windows amd64，Linux amd64，MacOS arm64 和 amd64
