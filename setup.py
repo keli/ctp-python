@@ -8,7 +8,7 @@ import os, sys, glob, shutil, pathlib, sysconfig
 API_VER = os.environ.get('API_VER', '6.6.9')
 
 # Get the long description from relevant files
-with open('README.md', encoding='utf-8') as f:
+with open('README.rst', encoding='utf-8') as f:
     readme = f.read()
 
 if sys.platform.startswith('darwin'):
