@@ -57,6 +57,6 @@ jobs:
       - name: Build wheel for Windows
         run: python -m build -w -n
         
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           path: ./dist/*.whl
