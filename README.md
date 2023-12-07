@@ -16,13 +16,19 @@
 
 ## 安装方法
 
-如果在Windows下推荐使用miniconda3环境，具体可参见编译环境准备。此环境下使用ctp前还需要安装libiconv
+* 如果在Windows下推荐使用miniconda3环境
+```
+winget install miniconda3
+```
+
+* Windows下使用ctp前还需要安装libiconv
 ```
 conda install -c conda-forge libiconv
 ```
 
+* 直接使用pip安装
 ```
-pip install ctp-python==6.6.9
+pip install ctp-python
 ```
 
 
