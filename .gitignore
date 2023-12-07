@@ -3,6 +3,7 @@ ctp_wrap.cpp
 ctp_wrap.h
 build/
 dist/
+artifact/
 *.egg-info/
 *.pyc
 .DS_Store

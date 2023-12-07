@@ -12,7 +12,7 @@ Python版CTP期货接口
 -  Linux已测试环境：Debian stable amd64
 -  Mac已测试环境：Mac OS Ventura（M1 Mac Mini，API版本6.6.9以上，Intel
    Mac未测试）
--  Windows已测试环境：Windows 11 64位（API版本6.6.9以上）
+-  Windows已测试环境：Windows 11 64位（API版本6.6.9以上）+ MiniConda3
 -  api目录中结尾带\ ``.c``\ 的版本号为测评版
 -  CTP返回的GBK编码字符串已经全部自动转换为UTF-8
 -  市场数据中的极大值代表无数据，为可读性起见打印整个结构体时会显示为None
@@ -20,15 +20,15 @@ Python版CTP期货接口
 安装方法
 --------
 
-::
-
-   pip install ctp-python==6.6.9
-
-如果在Windows下使用conda环境，那么使用前还需要安装libiconv
+如果在Windows下推荐使用miniconda3环境，具体可参见编译环境准备。此环境下使用ctp前还需要安装libiconv
 
 ::
 
    conda install -c conda-forge libiconv
+
+::
+
+   pip install ctp-python==6.6.9
 
 -  只支持6.6.9及更新的CTP版本
 -  已编译的二进制版本支持Python3.7 - 3.11
@@ -40,7 +40,7 @@ Python版CTP期货接口
 ------------
 
 Windows 11
-~~~~~~~~~~
+^^^^^^^^^^
 
 1. 安装编译环境
 
@@ -71,7 +71,7 @@ Windows 11
    可能需要关闭并重新打开命令行
 
 Mac OS
-~~~~~~
+^^^^^^
 
 1. 先在App Store中找到并安装Xcode，然后再安装Xcode命令行工具
 
@@ -92,7 +92,7 @@ Mac OS
    brew install swig
 
 Linux
-~~~~~
+^^^^^
 
    使用系统自带包管理器安装swig和gcc/g++编译器即可
 
@@ -205,6 +205,6 @@ Linux下穿透式监管信息采集常见问题
 其他常见问题
 ------------
 
--  为什么报UTF-8和GBK的转码错误？
+-  回调函数中传入的数据结构为何不能缓存？
 
-   这个是内存管理的问题而不是转码的问题，ctp库会释放掉它传给你的回调函数的内容，当你打印的时候这块内存已经free掉了，所以就报转码失败了。这个最理想的处理是改swig定义来自动把相应的结构体内容拷到python，但是我还没太搞清楚怎么在swig中做这件事。我自己的代码里面需要缓存起来的ctp结构只有很少的几处，直接在用户代码中手动拷贝到自己定义的python数据类型就可以了。
+   回调函数传入的数据结构是由ctp库负责内存管理的，调用结束后会释放掉。这个最理想的处理是通过脚本把相应的结构体全部批量生成swig定义来自动把结构体内容复制到python，但目前还没有做这件事。我自己的用户代码中需要缓存起来的ctp结构只有很少的几处，直接在用户代码中手动拷贝到自己定义的python数据类型就可以了。
