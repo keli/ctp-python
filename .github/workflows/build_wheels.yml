@@ -10,18 +10,18 @@ jobs:
         version: ["cp37", "cp38", "cp39", "cp310", "cp311", "cp312"]
     steps:
       - uses: actions/checkout@v3
-      
+
       - uses: actions/setup-python@v3
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
-       - name: Setup swig for macos
+      - name: Setup swig for macos
         if: matrix.os == 'macos-latest'
         run: |
           brew install swig
         env:
           HOMEBREW_NO_AUTO_UPDATE: 1
-          
+
       - name: Setup pip
         run: |
           python -m pip install --upgrade pip cibuildwheel
@@ -32,7 +32,7 @@ jobs:
           CIBW_BUILD: ${{ matrix.version }}-*
           CIBW_SKIP: "cp36-* *-win* *_i686 *-musllinux*"
           CIBW_ARCHS_MACOS: "x86_64 arm64"
-        
+
       - uses: actions/upload-artifact@v2
         with:
           path: ./dist/*.whl
@@ -45,25 +45,25 @@ jobs:
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v3
-          
+
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
-          
+
       - name: Prepare Windows
         if: matrix.os == 'windows-latest'
         run: |
           conda init
           conda install -c conda-forge libiconv
-          
+
       - name: Setup pip for Windows
         run: |
           python -m pip install --upgrade pip wheel build
-          
+
       - name: Build wheel for Windows
         run: python -m build -w -n
-        
+
       - uses: actions/upload-artifact@v3
         with:
           path: ./dist/*.whl
