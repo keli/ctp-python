@@ -14,7 +14,7 @@
 - CTP返回的GBK编码字符串已经全部自动转换为UTF-8
 - 市场数据中的极大值代表无数据，为可读性起见打印整个结构体时会显示为None
 
-## 安装方法
+## 快速安装
 
 * 如果在Windows下推荐使用miniconda3环境
 ```
@@ -33,11 +33,28 @@ pip install ctp-python
 
 
 - 只支持6.6.9及更新的CTP版本
-- 已编译的二进制版本支持Python3.7 - 3.11
+- 已编译的二进制版本支持Python3.7 - 3.12
 - 已编译的二进制版本支持平台：Windows amd64，Linux amd64，MacOS arm64 和 amd64
 - 其他版本请自行尝试编译（前提是有对应的CTP C++链接库），具体方法见下
 
-## 编译环境准备
+## 测试
+
+> 打开python shell，检查是否能正常import ctp
+
+```
+$ python
+Python 3.11.3
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import ctp
+>>>
+```
+
+> 跑一下测试（以simnow服务器为例，需要在simnow网站注册用户）
+```
+pytest -s tests/test_trader.py --front=tcp://218.202.237.33:10203 --broker=9999 --user=<investor_id> --password=<password> --app=simnow_client_test --auth=0000000000000000
+```
+
+## 自行编译 （可选）
 
 #### Windows 11
 
@@ -82,7 +99,7 @@ brew install swig
 > 推荐使用pyenv安装管理python版本
 
 
-## 安装说明
+##### 安装说明
 
 1. 克隆代码到本地
 ```
@@ -114,24 +131,6 @@ export API_VER=6.6.9.c
 ```
 set API_VER=6.6.9.c
 ```
-
-## 测试
-
-> 打开python shell，检查是否能正常import ctp
-
-```
-$ python
-Python 3.11.3
-Type "help", "copyright", "credits" or "license" for more information.
->>> import ctp
->>>
-```
-
-> 跑一下测试（以simnow服务器为例，需要在simnow网站注册用户）
-```
-pytest -s tests/test_trader.py --front=tcp://218.202.237.33:10203 --broker=9999 --user=<investor_id> --password=<password> --app=simnow_client_test --auth=0000000000000000
-```
-
 
 ## Linux下穿透式监管信息采集常见问题
 
