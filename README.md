@@ -31,7 +31,6 @@ conda install -c conda-forge libiconv
 pip install ctp-python
 ```
 
-
 - 只支持6.6.9及更新的CTP版本
 - 已编译的二进制版本支持Python3.7 - 3.12
 - 已编译的二进制版本支持平台：Windows amd64，Linux amd64，MacOS arm64 和 amd64
@@ -56,81 +55,80 @@ pytest -s tests/test_trader.py --front=tcp://218.202.237.33:10203 --broker=9999 
 
 ## 自行编译 （可选）
 
+### 编译环境准备
+
 #### Windows 11
 
 1. 安装编译环境
-```
-winget install Microsoft.VisualStudio.2022.BuildTools
-```
-> 然后菜单栏搜索并打开Visual Studio Installer，修改Build Tools的配置，将使用C++的桌面开发勾选上并安装
+   ```
+   winget install Microsoft.VisualStudio.2022.BuildTools
+   ```
+   > 然后菜单栏搜索并打开Visual Studio Installer，修改Build Tools的配置，将使用C++的桌面开发勾选上并安装
 
 2. 安装Python（以miniconda为例）
-```
-winget install miniconda3
-conda init
-```
+   ```
+   winget install miniconda3
+   conda init
+   ```
 
 3. 安装swig命令，以及iconv库
-```
-conda install -c conda-forge swig libiconv
-```
->可能需要关闭并重新打开命令行
+   ```
+   conda install -c conda-forge swig libiconv
+   ```
+   > 可能需要关闭并重新打开命令行
 
 #### Mac OS
 
-1. 先在App Store中找到并安装Xcode，然后再安装Xcode命令行工具
-```
-xcode-select --install
-```
-> 在弹出的窗口确认
+1. 安装Xcode和命令行工具
+   ```
+   xcode-select --install
+   ```
+   > 在弹出的窗口确认
 
 2. 安装Python（推荐使用pyenv）
-> 略
 
 3. 安装swig命令（以homebrew为例）
-```
-brew install swig
-```
+   ```
+   brew install swig
+   ```
 
 #### Linux
 
-> 使用系统自带包管理器安装swig和gcc/g++编译器即可
+- 使用系统自带包管理器安装swig和gcc/g++编译器
+- 推荐使用pyenv安装管理python版本
 
-> 推荐使用pyenv安装管理python版本
-
-
-##### 安装说明
+### 编译方法
 
 1. 克隆代码到本地
-```
-git clone git@github.com:keli/ctp-python.git
-cd ctp-python
-```
+   ```
+   git clone git@github.com:keli/ctp-python.git
+   cd ctp-python
+   ```
 
 2. 编译安装
-```
-python setup.py install
-```
-> 或
-```
-pip install .
-```
+   ```
+   python setup.py install
+   ```
+   或
+   ```
+   pip install .
+   ```
 
 3. 版本选择（可选）
 
-目前默认使用的是6.6.9 版本。如果需要链接和使用其他版本，只需要在编译安装前，设置API_VER环境变量为相应版本即可。
+   目前默认使用的是6.6.9 版本。如果需要链接和使用其他版本，只需要在编译安装前，设置API_VER环境变量为相应版本即可。
 
-以6.6.9.c版为例:
+   以6.6.9.c版为例:
 
-> Linux/Mac(bash/zsh)：
-```
-export API_VER=6.6.9.c
-```
+   Linux/Mac(bash/zsh)：
+   ```
+   export API_VER=6.6.9.c
+   ```
 
-> Windows：
-```
-set API_VER=6.6.9.c
-```
+   Windows：
+   ```
+   set API_VER=6.6.9.c
+   ```
 
 ## Linux下穿透式监管信息采集常见问题
 
@@ -140,7 +138,7 @@ set API_VER=6.6.9.c
 
 - 报错Decrypt handshake data failed
 
-  CTP版本与服务器端不一致，首次跟期货公司采集的时候请用“评测版本”如6.3.13，后续生产环境请用“生产版本”如6.3.15
+  CTP版本与服务器端不一致，首次跟期货公司采集的时候请用"评测版本"如6.3.13，后续生产环境请用"生产版本"如6.3.15
 
 - 报错 dmidecode not found
 
@@ -157,7 +155,7 @@ set API_VER=6.6.9.c
 - 不知道什么情况，xx数据拿不到
 
   用以下python脚本自己慢慢试吧，当打印出来是第一行结果是0则成功了，否则是-1。第二行是取到的信息，格式为```(操作系统类型)@(信息采集时间)@(内网IP1)@(内网IP2)@(网卡MAC1)@(网卡MAC2)@(设备名)@(操作系统版本)@(Disk_ID)@(CPU_ID)@(BIOS_ID)```
-  
+
   ```python
   import ctypes
   dll = ctypes.cdll.LoadLibrary('./thosttraderapi_se.so')
@@ -172,5 +170,3 @@ set API_VER=6.6.9.c
 - 回调函数中传入的数据结构为何不能缓存？
 
   回调函数传入的数据结构是由ctp库负责内存管理的，调用结束后会释放掉。这个最理想的处理是通过脚本把相应的结构体全部批量生成swig定义来自动把结构体内容复制到python，但目前还没有做这件事。我自己的用户代码中需要缓存起来的ctp结构只有很少的几处，直接在用户代码中手动拷贝到自己定义的python数据类型就可以了。
-
-
