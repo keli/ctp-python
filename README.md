@@ -32,7 +32,7 @@ pip install ctp-python
 ```
 
 - 只支持6.6.9及更新的CTP版本
-- 已编译的二进制版本支持Python3.7 - 3.12
+- 已编译的二进制版本支持Python3.7 - 3.13
 - 已编译的二进制版本支持平台：Windows amd64，Linux amd64，MacOS arm64 和 amd64
 - 其他版本请自行尝试编译（前提是有对应的CTP C++链接库），具体方法见下
 
