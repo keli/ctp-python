@@ -6,6 +6,8 @@ import distutils.command.install as dist_install
 import os, sys, glob, shutil, pathlib, sysconfig
 
 API_VER = os.environ.get('API_VER', '6.6.9')
+REVISION = 'post1'
+BUILD_VER = API_VER + '.' + REVISION if REVISION else API_VER
 
 # Get the long description from relevant files
 with open('README.md', encoding='utf-8') as f:
@@ -89,8 +91,7 @@ try:
         shutil.copy(path, './')
     setup(
         name='ctp-python',
-        version=API_VER,
-        #version=API_VER+'-1',
+        version=BUILD_VER,
         author='Keli Hu',
         author_email='dev@keli.hu',
         description="""CTP for python""",
