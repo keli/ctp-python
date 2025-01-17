@@ -10,8 +10,8 @@ from distutils import dist
 from setuptools import Extension, find_packages, setup
 from setuptools.command.build_py import build_py
 
-API_VER = os.environ.get("API_VER", "6.6.9")
-REVISION = "post1"
+API_VER = os.environ.get("API_VER", "6.7.7")
+REVISION = ""
 BUILD_VER = API_VER + "." + REVISION if REVISION else API_VER
 
 # Get the long description from relevant files
@@ -25,13 +25,39 @@ if sys.platform.startswith("darwin"):
         )
         sys.exit(-1)
     API_DIR = os.path.join("api", API_VER, "darwin")
-    API_LIBS = glob.glob(API_DIR + "/*.a")
-    LIB_NAMES = [pathlib.Path(path).stem[3:] for path in API_LIBS]
-    INC_DIRS = [API_DIR]
-    LIB_DIRS = [API_DIR]
-    LINK_ARGS = ["-Wl,-rpath,$ORIGIN"]
-    COMPILE_ARGS = []
-    # COMPILE_ARGS=['-mmacosx-version-min=11.3']
+    if API_VER >= "6.7.7":
+        # Handle macOS frameworks
+        INC_DIRS = [
+            os.path.join(API_DIR, "thostmduserapi_se.framework/Versions/A/Headers"),
+            os.path.join(API_DIR, "thosttraderapi_se.framework/Versions/A/Headers"),
+        ]
+        LIB_DIRS = [API_DIR]
+        LIB_NAMES = []
+        # Get direct paths to the framework libraries
+        MD_LIB = os.path.join(
+            API_DIR, "thostmduserapi_se.framework/Versions/A/thostmduserapi_se"
+        )
+        TRADER_LIB = os.path.join(
+            API_DIR, "thosttraderapi_se.framework/Versions/A/thosttraderapi_se"
+        )
+        API_LIBS = [MD_LIB, TRADER_LIB]
+        LINK_ARGS = [
+            "-Wl,-rpath,@loader_path",
+            MD_LIB,
+            TRADER_LIB,
+        ]
+        COMPILE_ARGS = []
+        # Define framework files for package_data
+        FRAMEWORK_FILES = ["*.framework", "*.framework/**/*"]
+    else:
+        # Handle older versions with static libraries
+        API_LIBS = glob.glob(API_DIR + "/*.a")
+        INC_DIRS = [API_DIR]
+        LIB_DIRS = [API_DIR]
+        LIB_NAMES = []
+        LINK_ARGS = ["-Wl,-rpath,$ORIGIN"]
+        LINK_ARGS.extend(API_LIBS)
+        COMPILE_ARGS = []
 elif sys.platform.startswith("linux"):
     API_DIR = os.path.join("api", API_VER, "linux")
     API_LIBS = glob.glob(API_DIR + "/*.so")
@@ -71,10 +97,47 @@ def get_install_data_dir():
     return install_cmd.install_data
 
 
+package_data = []
+if not sys.platform.startswith("darwin"):
+    package_data = [os.path.basename(lib) for lib in API_LIBS]
+else:
+    if API_VER >= "6.7.7":
+        package_data = FRAMEWORK_FILES
+    else:
+        package_data = []
+
+
 class BuildPy(build_py):
     def run(self):
         self.run_command("build_ext")
-        return super().run()
+        result = super().run()
+
+        # Copy API libraries to the same directory as ctp.py
+        if package_data:
+            build_lib = self.get_finalized_command("build").build_lib
+            for lib in API_LIBS:
+                lib_name = os.path.basename(lib)
+                dst = os.path.join(build_lib, lib_name)
+                if not sys.platform.startswith("darwin"):
+                    shutil.copy2(lib, dst)
+                else:
+                    # Copy the framework to the same directory as ctp.py
+                    framework_name = f"{lib_name}.framework"
+                    framework_path = os.path.join(API_DIR, framework_name)
+                    dst_framework = os.path.join(build_lib, framework_name)
+                    if os.path.exists(dst_framework):
+                        shutil.rmtree(dst_framework)
+
+                    def ignore_dsstore(dir, files):
+                        return [f for f in files if f == ".DS_Store"]
+
+                    shutil.copytree(
+                        framework_path,
+                        dst_framework,
+                        symlinks=True,
+                        ignore=ignore_dsstore,
+                    )
+        return result
 
 
 CTP_EXT = Extension(
@@ -87,14 +150,10 @@ CTP_EXT = Extension(
     extra_compile_args=COMPILE_ARGS,
     libraries=LIB_NAMES,
     language="c++",
-    swig_opts=["-py3", "-c++", "-threads", "-I" + API_DIR],
+    swig_opts=["-py3", "-c++", "-threads"] + ["-I" + inc for inc in INC_DIRS],
 )
 
 try:
-    for path in glob.glob(API_DIR + "/*.so"):
-        shutil.copy(path, "./")
-    for path in glob.glob(API_DIR + "/*.dll"):
-        shutil.copy(path, "./")
     setup(
         name="ctp-python",
         version=BUILD_VER,
@@ -106,9 +165,9 @@ try:
         url="https://github.com/keli/ctp-python",
         ext_modules=[CTP_EXT],
         py_modules=["ctp"],
-        packages=[""],
-        package_dir={"": "."},
-        package_data={"": glob.glob("*.so") + glob.glob("*.dll")},
+        # packages=[""],
+        # package_dir={"": "."},
+        package_data={"": package_data},
         classifiers=[
             "License :: OSI Approved :: BSD License",
             "Programming Language :: Python",
@@ -127,7 +186,4 @@ try:
         },
     )
 finally:
-    for path in glob.glob("*.so"):
-        os.remove(path)
-    for path in glob.glob("*.dll"):
-        os.remove(path)
+    pass
