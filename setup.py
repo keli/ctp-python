@@ -109,16 +109,6 @@ else:
 
 class BuildPy(build_py):
     def run(self):
-        # Create the ctp package directory first
-        ctp_dir = os.path.join("ctp")
-        os.makedirs(ctp_dir, exist_ok=True)
-
-        # Create an empty __init__.py to make it a valid package
-        init_path = os.path.join(ctp_dir, "__init__.py")
-        if not os.path.exists(init_path):
-            with open(init_path, "w") as f:
-                pass
-
         self.run_command("build_ext")
         result = super().run()
 
@@ -126,18 +116,9 @@ class BuildPy(build_py):
         build_lib = self.get_finalized_command("build").build_lib
         build_ctp_dir = os.path.join(build_lib, "ctp")
 
-        # Create build ctp directory if it doesn't exist
-        os.makedirs(build_ctp_dir, exist_ok=True)
-
         # Move SWIG-generated ctp.py from current directory to the package directory
         if os.path.exists("ctp.py"):
             shutil.move("ctp.py", os.path.join(build_ctp_dir, "ctp.py"))
-
-        # Update __init__.py content - change the import order
-        build_init_path = os.path.join(build_ctp_dir, "__init__.py")
-        with open(build_init_path, "w") as f:
-            f.write("from ._ctp import *\n")  # Import _ctp first
-            f.write("from .ctp import *\n")  # Then import ctp
 
         # Copy API libraries
         if package_data:

@@ -1,7 +1,6 @@
 ctp.py
 ctp_wrap.cpp
 ctp_wrap.h
-ctp/
 build/
 dist/
 artifact/
