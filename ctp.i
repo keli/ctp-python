@@ -207,6 +207,18 @@ def _swig_repr(self):
 %feature("director") CThostFtdcMdSpi;
 %feature("director") CThostFtdcTraderSpi;
 
+// Ignore problematic character constants that cause compilation issues on Windows
+%ignore THOST_FTDC_FTC_BankLaunchBankToBroker;
+%ignore THOST_FTDC_FTC_BrokerLaunchBankToBroker;
+%ignore THOST_FTDC_FTC_BankLaunchBrokerToBank;
+%ignore THOST_FTDC_FTC_BrokerLaunchBrokerToBank;
+
+// Additional constants to ignore
+%ignore THOST_FTDC_VTC_BankBankToFuture;
+%ignore THOST_FTDC_VTC_BankFutureToBank;
+%ignore THOST_FTDC_VTC_FutureBankToFuture;
+%ignore THOST_FTDC_VTC_FutureFutureToBank;
+
 %include "ThostFtdcUserApiDataType.h"
 %include "ThostFtdcUserApiStruct.h"
 %include "ThostFtdcMdApi.h"
