@@ -109,22 +109,48 @@ else:
 
 class BuildPy(build_py):
     def run(self):
+        # Create the ctp package directory first
+        ctp_dir = os.path.join("ctp")
+        os.makedirs(ctp_dir, exist_ok=True)
+
+        # Create an empty __init__.py to make it a valid package
+        init_path = os.path.join(ctp_dir, "__init__.py")
+        if not os.path.exists(init_path):
+            with open(init_path, "w") as f:
+                pass
+
         self.run_command("build_ext")
         result = super().run()
 
-        # Copy API libraries to the same directory as ctp.py
+        # Get the build directory
+        build_lib = self.get_finalized_command("build").build_lib
+        build_ctp_dir = os.path.join(build_lib, "ctp")
+
+        # Create build ctp directory if it doesn't exist
+        os.makedirs(build_ctp_dir, exist_ok=True)
+
+        # Move SWIG-generated ctp.py from current directory to the package directory
+        if os.path.exists("ctp.py"):
+            shutil.move("ctp.py", os.path.join(build_ctp_dir, "ctp.py"))
+
+        # Update __init__.py content - change the import order
+        build_init_path = os.path.join(build_ctp_dir, "__init__.py")
+        with open(build_init_path, "w") as f:
+            f.write("from ._ctp import *\n")  # Import _ctp first
+            f.write("from .ctp import *\n")  # Then import ctp
+
+        # Copy API libraries
         if package_data:
-            build_lib = self.get_finalized_command("build").build_lib
             for lib in API_LIBS:
                 lib_name = os.path.basename(lib)
-                dst = os.path.join(build_lib, lib_name)
+                dst = os.path.join(build_ctp_dir, lib_name)
                 if not sys.platform.startswith("darwin"):
                     shutil.copy2(lib, dst)
                 else:
-                    # Copy the framework to the same directory as ctp.py
+                    # Copy the framework to the package directory
                     framework_name = f"{lib_name}.framework"
                     framework_path = os.path.join(API_DIR, framework_name)
-                    dst_framework = os.path.join(build_lib, framework_name)
+                    dst_framework = os.path.join(build_ctp_dir, framework_name)
                     if os.path.exists(dst_framework):
                         shutil.rmtree(dst_framework)
 
@@ -141,7 +167,7 @@ class BuildPy(build_py):
 
 
 CTP_EXT = Extension(
-    "_ctp",
+    "ctp._ctp",
     ["ctp.i"],
     # ['ctp_wrap.cpp'],
     include_dirs=INC_DIRS,
@@ -164,10 +190,8 @@ try:
         long_description_content_type="text/markdown",
         url="https://github.com/keli/ctp-python",
         ext_modules=[CTP_EXT],
-        py_modules=["ctp"],
-        # packages=[""],
-        # package_dir={"": "."},
-        package_data={"": package_data},
+        packages=["ctp"],  # Define ctp as a package
+        package_data={"ctp": package_data},
         classifiers=[
             "License :: OSI Approved :: BSD License",
             "Programming Language :: Python",
