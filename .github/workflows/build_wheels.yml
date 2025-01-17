@@ -32,6 +32,8 @@ jobs:
           CIBW_BUILD: ${{ matrix.version }}-*
           CIBW_SKIP: "cp36-* *-win* *_i686 *-musllinux*"
           CIBW_ARCHS_MACOS: "x86_64 arm64"
+          # Skip delocate for macOS builds
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: ""
 
       - uses: actions/upload-artifact@v3
         with:
