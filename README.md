@@ -8,7 +8,7 @@
 - 本人生产环境使用Linux，其他平台仅编译测试通过
 - 已通过github workflow编译好发布至pypi
 - Linux已测试环境：Debian stable amd64
-- Mac已测试环境：Mac OS Ventura（M1 Mac Mini，API版本6.6.9以上，Intel Mac未测试）
+- Mac已测试环境：Mac OS 15.x（M1 Mac Mini，API版本6.6.9以上，Intel Mac未测试）
 - Windows已测试环境：Windows 11 64位（API版本6.6.9以上）+ MiniConda3
 - api目录中结尾带`.c`的版本号为测评版
 - CTP返回的GBK编码字符串已经全部自动转换为UTF-8
@@ -31,7 +31,7 @@ conda install -c conda-forge libiconv
 pip install ctp-python
 ```
 
-- 只支持6.6.9及更新的CTP版本
+- 只支持6.6.9以上的CTP版本，如需使用评测版本请自行编译
 - 已编译的二进制版本支持Python3.7 - 3.13
 - 已编译的二进制版本支持平台：Windows amd64，Linux amd64，MacOS arm64 和 amd64
 - 其他版本请自行尝试编译（前提是有对应的CTP C++链接库），具体方法见下
@@ -50,7 +50,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 > 跑一下测试（以simnow服务器为例，需要在simnow网站注册用户）
 ```
-pytest -s tests/test_trader.py --front=tcp://218.202.237.33:10203 --broker=9999 --user=<investor_id> --password=<password> --app=simnow_client_test --auth=0000000000000000
+pytest -s tests/test_trader.py --front=tcp://180.168.146.187:10130 --broker=9999 --user=<investor_id> --password=<password> --app=simnow_client_test --auth=0000000000000000
 ```
 
 ## 自行编译 （可选）
@@ -116,7 +116,7 @@ pytest -s tests/test_trader.py --front=tcp://218.202.237.33:10203 --broker=9999 
 
 3. 版本选择（可选）
 
-   目前默认使用的是6.6.9 版本。如果需要链接和使用其他版本，只需要在编译安装前，设置API_VER环境变量为相应版本即可。
+   目前默认使用的是6.7.7 版本。如果需要链接和使用其他版本，只需要在编译安装前，设置API_VER环境变量为相应版本即可。
 
    以6.6.9.c版为例:
 
@@ -138,7 +138,7 @@ pytest -s tests/test_trader.py --front=tcp://218.202.237.33:10203 --broker=9999 
 
 - 报错Decrypt handshake data failed
 
-  CTP版本与服务器端不一致，首次跟期货公司采集的时候请用"评测版本"如6.3.13，后续生产环境请用"生产版本"如6.3.15
+  CTP版本与服务器端不一致，首次跟期货公司采集的时候可能需要使用"评测版本"如6.6.9.c，后续生产环境请用"生产版本"如6.6.9
 
 - 报错 dmidecode not found
 
