@@ -2,18 +2,6 @@
 
 %include "typemaps.i"
 
-//%begin %{
-//#define SWIG_PYTHON_STRICT_BYTE_CHAR
-//%}
-
-// #define %ctp_new_instance(TYPE...) %reinterpret_cast(calloc(1, sizeof(TYPE)), TYPE*)
-// #define %ctp_new_copy(VAL, TYPE...) %reinterpret_cast(memcpy(%ctp_new_instance(TYPE), &(VAL), sizeof(TYPE)), TYPE*)
-
-// %extend TAGNAME {
-//   struct TAGNAME *__copy__() {
-//     return %ctp_new_copy(*$self, struct TAGNAME);
-//   }
-// }
 
 %pythonbegin %{
 from sys import stderr, float_info
@@ -206,6 +194,18 @@ def _swig_repr(self):
 
 %feature("director") CThostFtdcMdSpi;
 %feature("director") CThostFtdcTraderSpi;
+
+// Automatically copy callback structs to Python-owned heap objects,
+// so they remain valid after the callback returns.
+// This matches all CThostFtdc*Field pointer types passed into director callbacks.
+%typemap(directorin) SWIGTYPE * {
+    if ($1) {
+        $input = SWIG_NewPointerObj(new $*1_ltype(*$1), $descriptor, SWIG_POINTER_OWN);
+    } else {
+        $input = Py_None;
+        Py_INCREF(Py_None);
+    }
+}
 
 // Ignore problematic character constants that cause compilation issues on Windows
 %ignore THOST_FTDC_FTC_BankLaunchBankToBroker;
