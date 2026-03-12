@@ -83,9 +83,9 @@ jobs:
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: ""
           CIBW_ENVIRONMENT: "API_VER=${{ needs.setup.outputs.api_ver }} BUILD_VER=${{ needs.setup.outputs.build_ver }}"
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: ctp-python
+          name: ctp-python-${{ matrix.os }}-${{ matrix.version }}
           path: ./dist/*.whl
 
   build_win:
@@ -119,9 +119,9 @@ jobs:
           API_VER: ${{ needs.setup.outputs.api_ver }}
           BUILD_VER: ${{ needs.setup.outputs.build_ver }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: ctp-python
+          name: ctp-python-${{ matrix.os }}-${{ matrix.python-version }}
           path: ./dist/*.whl
 
   publish:
@@ -134,10 +134,11 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: ctp-python
+          pattern: ctp-python-*
           path: dist/
+          merge-multiple: true
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
