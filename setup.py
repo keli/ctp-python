@@ -12,7 +12,7 @@ from setuptools.command.build_py import build_py
 
 API_VER = os.environ.get("API_VER", "6.7.7")
 REVISION = ""
-BUILD_VER = API_VER + "." + REVISION if REVISION else API_VER
+BUILD_VER = os.environ.get("BUILD_VER") or (API_VER + "." + REVISION if REVISION else API_VER)
 
 # Get the long description from relevant files
 with open("README.md", encoding="utf-8") as f:
