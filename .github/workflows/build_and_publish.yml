@@ -54,7 +54,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        version: ["cp37", "cp38", "cp39", "cp310", "cp311", "cp312", "cp313"]
+        version: ["cp38", "cp39", "cp310", "cp311", "cp312", "cp313"]
     steps:
       - uses: actions/checkout@v4
 
@@ -94,7 +94,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
 
