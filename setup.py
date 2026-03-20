@@ -12,7 +12,9 @@ from setuptools.command.build_py import build_py
 
 API_VER = os.environ.get("API_VER", "6.7.7")
 REVISION = ""
-BUILD_VER = os.environ.get("BUILD_VER") or (API_VER + "." + REVISION if REVISION else API_VER)
+BUILD_VER = os.environ.get("BUILD_VER") or (
+    API_VER + "." + REVISION if REVISION else API_VER
+)
 
 # Get the long description from relevant files
 with open("README.md", encoding="utf-8") as f:
@@ -177,13 +179,13 @@ try:
             "License :: OSI Approved :: BSD License",
             "Programming Language :: Python",
             "Programming Language :: Python :: 3",
-            "Programming Language :: Python :: 3.7",
             "Programming Language :: Python :: 3.8",
             "Programming Language :: Python :: 3.9",
             "Programming Language :: Python :: 3.10",
             "Programming Language :: Python :: 3.11",
             "Programming Language :: Python :: 3.12",
             "Programming Language :: Python :: 3.13",
+            "Programming Language :: Python :: 3.14",
             "Programming Language :: Python :: Implementation :: CPython",
         ],
         cmdclass={
