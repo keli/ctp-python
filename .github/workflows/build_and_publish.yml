@@ -80,7 +80,7 @@ jobs:
         run: python -m cibuildwheel --output-dir dist
         env:
           CIBW_BUILD: ${{ matrix.version }}-*
-          CIBW_SKIP: "cp36-* *-win* *_i686 *-musllinux*"
+          CIBW_SKIP: "*-win* *_i686 *-musllinux*"
           CIBW_ARCHS_MACOS: "x86_64 arm64"
           # Skip delocate for macOS builds
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: ""

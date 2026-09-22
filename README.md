@@ -6,9 +6,9 @@
 
 - **本项目出于个人兴趣及分享目的，与上期所CTP官方无任何关系。本人不对使用这套库的任何后果负责。**
 - 本人生产环境使用Linux，其他平台仅编译测试通过
-- 已通过github workflow编译好发布至pypi
+- 已通过 GitHub Actions 编译并发布至 PyPI
 - Linux已测试环境：Debian stable amd64
-- Mac已测试环境：Mac OS 15.x（M1 Mac Mini，API版本6.6.9以上，Intel Mac未测试）
+- Mac已测试环境：macOS 15.x（M1 Mac Mini，API版本6.6.9以上；Intel 版本通过 CI 编译，未做运行测试）
 - Windows已测试环境：Windows 11 64位（API版本6.6.9以上）+ MiniConda3
 - api目录中结尾带`.c`的版本号为测评版
 - CTP返回的GBK编码字符串已经全部自动转换为UTF-8
@@ -32,7 +32,7 @@ pip install ctp-python
 ```
 
 - 只支持6.6.9以上的CTP版本，如需使用评测版本请自行编译
-- 已编译的二进制版本支持Python3.7 - 3.13
+- 已编译的二进制版本支持 Python 3.9 - 3.14
 - 已编译的二进制版本支持平台：Windows amd64，Linux amd64，MacOS arm64 和 amd64
 - 其他版本请自行尝试编译（前提是有对应的CTP C++链接库），具体方法见下
 
@@ -106,17 +106,23 @@ pytest -s tests/test_trader.py --front=tcp://180.168.146.187:10130 --broker=9999
    ```
 
 2. 编译安装
+
    ```
-   python setup.py install
+   python -m pip install .
    ```
-   或
+
+   如需只构建 wheel：
+
    ```
-   pip install .
+   python -m pip install build
+   python -m build --wheel
    ```
+
+   构建工具会根据 `pyproject.toml` 自动创建隔离环境并安装 `setuptools`。系统仍需提前安装 SWIG，以及 Windows 所需的 libiconv。
 
 3. 版本选择（可选）
 
-   目前默认使用的是6.7.7 版本。如果需要链接和使用其他版本，只需要在编译安装前，设置API_VER环境变量为相应版本即可。
+   目前默认使用的是6.7.13 版本。如果需要链接和使用其他版本，只需要在编译安装前，设置API_VER环境变量为相应版本即可。
 
    以6.6.9.c版为例:
 
@@ -170,4 +176,3 @@ pytest -s tests/test_trader.py --front=tcp://180.168.146.187:10130 --broker=9999
 - **回调结构体现在可以直接缓存**
 
   之前回调函数传入的结构体由 CTP 库管理内存，回调返回后即失效，需要在用户代码中手动拷贝。现在 SWIG 层会自动将结构体复制到独立的堆内存并交由 Python 管理，回调结束后依然有效，可以直接持有引用或存入队列。
-
