@@ -3,7 +3,6 @@ import os
 import pathlib
 import shutil
 import sys
-import sysconfig
 
 from setuptools import Extension, find_packages, setup
 from setuptools.command.build_py import build_py
@@ -76,13 +75,14 @@ elif sys.platform.startswith("win"):
     API_DIR = os.path.join("api", API_VER, "windows")
     API_LIBS = glob.glob(API_DIR + "/*.dll")
     LIB_NAMES = [pathlib.Path(path).stem for path in API_LIBS] + ["iconv"]
+    ICONV_PREFIX = os.environ.get("CONDA_PREFIX") or sys.base_prefix
     INC_DIRS = [
         API_DIR,
-        os.path.join(sysconfig.get_config_var("base"), "Library", "include"),
+        os.path.join(ICONV_PREFIX, "Library", "include"),
     ]
     LIB_DIRS = [
         API_DIR,
-        os.path.join(sysconfig.get_config_var("base"), "Library", "lib"),
+        os.path.join(ICONV_PREFIX, "Library", "lib"),
     ]
     LINK_ARGS = []
     COMPILE_ARGS = ["/utf-8", "/wd4101"]

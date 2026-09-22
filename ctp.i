@@ -56,7 +56,7 @@ def _swig_repr(self):
                 if (traceback == NULL) {
                     traceback = Py_None;
                 }
-                swig::SwigVar_PyObject swig_method_name = SWIG_Python_str_FromChar((char *) "pyError");
+                swig::SwigVar_PyObject swig_method_name = PyUnicode_FromString("pyError");
                 swig::SwigVar_PyObject result = PyObject_CallMethodObjArgs(swig_get_self(), (PyObject *) swig_method_name, $error, value, traceback, NULL);
             }
 
