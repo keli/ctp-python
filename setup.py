@@ -1,16 +1,15 @@
-import distutils.command.install as dist_install
 import glob
 import os
 import pathlib
 import shutil
 import sys
 import sysconfig
-from distutils import dist
 
 from setuptools import Extension, find_packages, setup
 from setuptools.command.build_py import build_py
 
-API_VER = os.environ.get("API_VER", "6.7.7")
+API_VER = os.environ.get("API_VER", "6.7.13")
+API_VERSION = tuple(int(part) for part in API_VER.split(".")[:3])
 REVISION = ""
 BUILD_VER = os.environ.get("BUILD_VER") or (
     API_VER + "." + REVISION if REVISION else API_VER
@@ -21,13 +20,13 @@ with open("README.md", encoding="utf-8") as f:
     readme = f.read()
 
 if sys.platform.startswith("darwin"):
-    if API_VER < "6.6.9":
+    if API_VERSION < (6, 6, 9):
         print(
             "Error: Platform", sys.platform, "API Version <", API_VER, "not supported"
         )
         sys.exit(-1)
     API_DIR = os.path.join("api", API_VER, "darwin")
-    if API_VER >= "6.7.7":
+    if API_VERSION >= (6, 7, 7):
         # Handle macOS frameworks
         INC_DIRS = [
             os.path.join(API_DIR, "thostmduserapi_se.framework/Versions/A/Headers"),
@@ -69,7 +68,7 @@ elif sys.platform.startswith("linux"):
     LINK_ARGS = ["-Wl,-rpath,$ORIGIN"]
     COMPILE_ARGS = []
 elif sys.platform.startswith("win"):
-    if API_VER < "6.6.9":
+    if API_VERSION < (6, 6, 9):
         print(
             "Error: Platform", sys.platform, "API Version <", API_VER, "not supported"
         )
@@ -92,18 +91,11 @@ else:
     sys.exit(-1)
 
 
-def get_install_data_dir():
-    d = dist.Distribution()
-    install_cmd = dist_install.install(d)
-    install_cmd.finalize_options()
-    return install_cmd.install_data
-
-
 package_data = []
 if not sys.platform.startswith("darwin"):
     package_data = [os.path.basename(lib) for lib in API_LIBS]
 else:
-    if API_VER >= "6.7.7":
+    if API_VERSION >= (6, 7, 7):
         package_data = FRAMEWORK_FILES
     else:
         package_data = []
@@ -159,7 +151,7 @@ CTP_EXT = Extension(
     extra_compile_args=COMPILE_ARGS,
     libraries=LIB_NAMES,
     language="c++",
-    swig_opts=["-py3", "-c++", "-threads"] + ["-I" + inc for inc in INC_DIRS],
+    swig_opts=["-c++", "-threads"] + ["-I" + inc for inc in INC_DIRS],
 )
 
 try:
@@ -172,6 +164,7 @@ try:
         long_description=readme,
         long_description_content_type="text/markdown",
         url="https://github.com/keli/ctp-python",
+        python_requires=">=3.9",
         ext_modules=[CTP_EXT],
         packages=["ctp"],  # Define ctp as a package
         package_data={"ctp": package_data},
@@ -179,7 +172,6 @@ try:
             "License :: OSI Approved :: BSD License",
             "Programming Language :: Python",
             "Programming Language :: Python :: 3",
-            "Programming Language :: Python :: 3.8",
             "Programming Language :: Python :: 3.9",
             "Programming Language :: Python :: 3.10",
             "Programming Language :: Python :: 3.11",

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE packageDefine SYSTEM "C:\amake\package.dtd">
+<packageDefine name="CommAesKey" version="1" type="cpp" includedir="." platform="all">
+	<parameter/>
+	<depend>
+	</depend>
+	<cppfile>
+		<file name="CommAesKey.cpp"/>
+	</cppfile>
+	<headfile>
+		<file name="CommAesKey.h"/>
+	</headfile>
+	<command/>
+</packageDefine>
