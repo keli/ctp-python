@@ -85,7 +85,11 @@ pytest -s tests/test_trader.py --front=tcp://180.168.146.187:10130 --broker=9999
    ```
    > 在弹出的窗口确认
 
-2. 安装Python（推荐使用pyenv）
+2. 安装 uv 并使用 uv 安装 Python
+   ```
+   brew install uv
+   uv python install 3.13
+   ```
 
 3. 安装swig命令（以homebrew为例）
    ```
@@ -95,7 +99,11 @@ pytest -s tests/test_trader.py --front=tcp://180.168.146.187:10130 --broker=9999
 #### Linux
 
 - 使用系统自带包管理器安装swig和gcc/g++编译器
-- 推荐使用pyenv安装管理python版本
+- 推荐使用 uv 安装和管理 Python
+  ```
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  uv python install 3.13
+  ```
 
 ### 编译方法
 
